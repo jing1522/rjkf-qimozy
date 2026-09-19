@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三维沙盘 · 数模备赛小站</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="libs/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="libs/jquery-3.7.1.min.js" defer></script>
+  <script src="libs/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-mm sticky-top" data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">数模备赛小站</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="展开导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="prep.html">我的准备</a></li>
+          <li class="nav-item"><a class="nav-link" href="notes.html">我的心得</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="sandbox.html">三维沙盘</a></li>
+          <li class="nav-item"><a class="nav-link" href="survey.html">问卷</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-head">
+    <div class="container py-4">
+      <h1 class="h4 mb-2">三维沙盘</h1>
+      <p class="page-head-text mb-0">备赛时用 A-Frame 练手搭的小沙盘：一个「扫描点」先向正右直线飞到大圆上的顶点，然后顺时针沿正六边形一路扫——扫到哪条边，哪条边就亮。</p>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <section>
+      <div class="card overflow-hidden mb-3">
+        <div class="card-body p-0">
+          <iframe class="sandbox-frame" src="three-d/scene.html" title="三维沙盘" loading="lazy"></iframe>
+        </div>
+      </div>
+      <p class="text-muted small mb-3">正六边形的六条边就是扫描路线；六个顶点都落在那条浅色大圆上，扫到哪条边、哪条边就亮。</p>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">场景里的交互</h2>
+          <ul class="mb-0">
+            <li>鼠标按住拖动：转动视角，绕着沙盘看一圈。</li>
+            <li>键盘 W / A / S / D：在场景里前后左右走动，靠近平面上摆的方块。</li>
+            <li>动画自动播放：扫描点从原点出发，沿六边形的边一圈一圈扫，扫过的边会亮起来。</li>
+            <li>场景里也留了提示文字（左下角），鼠标放到画面里先点一下，键盘才接管方向键。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer py-4">
+    <div class="container">数模备赛小站 · 课程实践作品 · 用本地服务器打开（页面要读取 data/ 下的 JSON）</div>
+  </footer>
+</body>
+</html>

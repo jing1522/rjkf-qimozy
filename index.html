@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数模备赛小站 · 赛后回顾</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="libs/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="libs/jquery-3.7.1.min.js" defer></script>
+  <script src="libs/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-mm sticky-top" data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">数模备赛小站</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="展开导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="prep.html">我的准备</a></li>
+          <li class="nav-item"><a class="nav-link" href="notes.html">我的心得</a></li>
+          <li class="nav-item"><a class="nav-link" href="sandbox.html">三维沙盘</a></li>
+          <li class="nav-item"><a class="nav-link" href="survey.html">问卷</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container py-5">
+      <p class="hero-kicker mb-2">数学建模竞赛 · 赛后回顾</p>
+      <h1 class="h3 mb-3">数模备赛小站</h1>
+      <p class="hero-text mb-4">
+        这个站是我参加完数学建模竞赛之后做的：把备赛期间的时间记录、用 AI 的一点心得，
+        还有练手做的小沙盘整理在一起，算给这次备赛留个存档。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-accent" href="prep.html">看看备赛数据</a>
+        <a class="btn btn-outline-light" href="survey.html">填一份问卷</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-5">
+    <section>
+      <h2 class="h4 mb-3">站点里有什么</h2>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-3">
+          <article class="card entry-card h-100">
+            <div class="card-body">
+              <h3 class="h6">我的准备</h3>
+              <p class="card-text small text-muted mb-0">备赛期间每周投入的时长记录，实际和计划各一份，能按方向、周区间筛选，也能看每一条明细。</p>
+              <a class="btn btn-sm btn-accent" href="prep.html">进入</a>
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <article class="card entry-card h-100">
+            <div class="card-body">
+              <h3 class="h6">我的心得</h3>
+              <p class="card-text small text-muted mb-0">比赛里用 AI 的四条体会，加上七个阶段分别怎么用它，还有几个备赛时常翻的网站。</p>
+              <a class="btn btn-sm btn-accent" href="notes.html">进入</a>
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <article class="card entry-card h-100">
+            <div class="card-body">
+              <h3 class="h6">三维沙盘</h3>
+              <p class="card-text small text-muted mb-0">用 A-Frame 搭的六边形扫描沙盘，鼠标能转视角、WASD 能在场景里走动。</p>
+              <a class="btn btn-sm btn-accent" href="sandbox.html">进入</a>
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <article class="card entry-card h-100">
+            <div class="card-body">
+              <h3 class="h6">问卷</h3>
+              <p class="card-text small text-muted mb-0">想了解其他同学在比赛里是怎么用 AI 的，填完存在本地，还能看到已经填过的记录。</p>
+              <a class="btn btn-sm btn-accent" href="survey.html">进入</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">这个站是怎么做的</h2>
+          <ul class="mb-0">
+            <li>页面和布局：Bootstrap 5 的栅格与导航，窄屏下导航会折叠成汉堡按钮。</li>
+            <li>交互：jQuery 负责取元素、绑定事件（数据源切换、筛选、问卷提交和删除用的是事件委托）。</li>
+            <li>数据：备赛记录放在 data/prep.json 和 data/plan.json 里，用 fetch 异步加载，加载中、成功、空数据、失败四种状态都有提示。</li>
+            <li>图表：柱状图和饼图用 ECharts，折线图用 Chart.js，点柱状图的柱子可以让折线图只显示这一类。</li>
+            <li>三维：沙盘用 A-Frame 写，嵌在「三维沙盘」页面里。</li>
+            <li>运行：页面要读本地 JSON，所以不能用双击打开，要用本地服务器（详见仓库 README）。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer py-4">
+    <div class="container">数模备赛小站 · 课程实践作品 · 用本地服务器打开（页面要读取 data/ 下的 JSON）</div>
+  </footer>
+</body>
+</html>

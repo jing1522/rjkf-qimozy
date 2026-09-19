@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三维沙盘</title>
+  <link rel="icon" href="data:,">
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+    #hint {
+      position: fixed;
+      left: 12px;
+      bottom: 10px;
+      margin: 0;
+      font-family: sans-serif;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .7);
+      z-index: 10;
+    }
+    .a-enter-vr {
+      display: none;
+    }
+  </style>
+  <script src="../libs/aframe.min.js"></script>
+</head>
+<body>
+  <p id="hint">鼠标拖动转视角，WASD 走动</p>
+  <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false"
+           fog="type: exponential; color: #0d2c54; density: 0.02">
+    <a-sky color="#0d2c54"></a-sky>
+    <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
+    <a-light type="directional" position="4 10 3" intensity="0.7"></a-light>
+
+    <a-plane rotation="-90 0 0" width="44" height="44" color="#2f4a6d"></a-plane>
+
+    <a-torus position="0 0.02 0" rotation="-90 0 0" radius="8" radius-tubular="0.02"
+             color="#6c9bd1" opacity="0.35"></a-torus>
+
+    <a-box class="hex-edge" position="6 0.04 3.464" rotation="0 -120 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+    <a-box class="hex-edge" position="0 0.04 6.928" rotation="0 -180 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+    <a-box class="hex-edge" position="-6 0.04 3.464" rotation="0 -240 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+    <a-box class="hex-edge" position="-6 0.04 -3.464" rotation="0 -300 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+    <a-box class="hex-edge" position="0 0.04 -6.928" rotation="0 -360 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+    <a-box class="hex-edge" position="6 0.04 -3.464" rotation="0 -420 0" width="8" height="0.07" depth="0.16" color="#35597f"></a-box>
+
+    <a-box position="-3 0.5 2" width="1.6" height="1" depth="1.6" color="#b9c6d6"></a-box>
+    <a-box position="3.5 0.4 -2.5" width="1.2" height="0.8" depth="1.2" color="#9fb3c8"></a-box>
+    <a-box position="1 0.3 3.5" width="0.9" height="0.6" depth="0.9" color="#e2e8f0"></a-box>
+
+    <a-sphere id="scanner" radius="0.3" color="#ffd166" position="0 1.6 0"></a-sphere>
+
+    <a-camera position="0 7 20" look-controls wasd-controls></a-camera>
+  </a-scene>
+  <script>
+    const R = 8;
+    const H = 1.6;
+    const SPEED = 4;
+    const INTRO_T = R / SPEED;
+    const DIM = '#35597f';
+    const LIT = '#f97316';
+
+    const vertices = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = i * Math.PI / 3;
+      vertices.push({ x: R * Math.cos(angle), z: R * Math.sin(angle) });
+    }
+
+    const sceneEl = document.querySelector('a-scene');
+    const scanner = document.querySelector('#scanner');
+    const edges = document.querySelectorAll('.hex-edge');
+
+    let time = 0;
+    let last = performance.now();
+    let lastEdge = -1;
+
+    const tick = (now) => {
+      time += (now - last) / 1000;
+      last = now;
+
+      let edgeIndex = -1;
+      if (time < INTRO_T) {
+        const k = time / INTRO_T;
+        scanner.object3D.position.set(R * k, H, 0);
+      } else {
+        const s = ((time - INTRO_T) * SPEED) % (6 * R);
+        edgeIndex = Math.floor(s / R);
+        const k = (s % R) / R;
+        const a = vertices[edgeIndex];
+        const b = vertices[(edgeIndex + 1) % 6];
+        scanner.object3D.position.set(a.x + (b.x - a.x) * k, H, a.z + (b.z - a.z) * k);
+      }
+
+      if (edgeIndex !== lastEdge) {
+        edges.forEach((edge, i) => {
+          edge.setAttribute('material', 'color', i === edgeIndex ? LIT : DIM);
+        });
+        lastEdge = edgeIndex;
+      }
+
+      requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      last = performance.now();
+      requestAnimationFrame(tick);
+    };
+
+    if (sceneEl.hasLoaded) {
+      start();
+    } else {
+      sceneEl.addEventListener('loaded', start);
+    }
+  </script>
+</body>
+</html>

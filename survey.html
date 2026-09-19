@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>问卷 · 数模备赛小站</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="libs/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="libs/jquery-3.7.1.min.js" defer></script>
+  <script src="libs/bootstrap.bundle.min.js" defer></script>
+  <script src="js/survey.js" defer></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-mm sticky-top" data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">数模备赛小站</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="展开导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="prep.html">我的准备</a></li>
+          <li class="nav-item"><a class="nav-link" href="notes.html">我的心得</a></li>
+          <li class="nav-item"><a class="nav-link" href="sandbox.html">三维沙盘</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="survey.html">问卷</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-head">
+    <div class="container py-4">
+      <h1 class="h4 mb-2">问卷</h1>
+      <p class="page-head-text mb-0">比赛结束后，我想了解一下其他参赛同学的情况——尤其是大家在比赛里是怎么用 AI 的。填完提交会保存在本地，下面还能看到已经填过的记录。</p>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <section class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <div class="alert alert-success" id="survey-status" style="display: none;"></div>
+
+            <details class="mb-4">
+              <summary class="text-muted small">点击展开填写说明</summary>
+              <p class="text-muted small mb-0 mt-2">问卷只用来了解大家在数模比赛里使用 AI 的真实情况，内容存在你自己的浏览器里，不会发到网上。</p>
+            </details>
+
+            <form id="survey-form" novalidate>
+              <fieldset class="mb-4">
+                <legend class="h6">基本信息</legend>
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="s-name">称呼</label>
+                    <input type="text" class="form-control" id="s-name" name="name" placeholder="怎么称呼你">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="s-mail">邮箱</label>
+                    <input type="email" class="form-control" id="s-mail" name="mail" placeholder="用来联系的邮箱">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="s-grade">年级</label>
+                    <select class="form-select" id="s-grade" name="grade">
+                      <option value="">请选择</option>
+                      <option value="大一">大一</option>
+                      <option value="大二">大二</option>
+                      <option value="大三">大三</option>
+                      <option value="大四">大四</option>
+                      <option value="研究生">研究生</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <p class="form-label mb-1">参赛经历</p>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="experience" id="exp-yes" value="参加过">
+                    <label class="form-check-label" for="exp-yes">参加过</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="experience" id="exp-will" value="未参加但打算参加">
+                    <label class="form-check-label" for="exp-will">未参加，但打算参加</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="experience" id="exp-no" value="未参加也不打算参加">
+                    <label class="form-check-label" for="exp-no">未参加，也不打算参加</label>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset class="mb-4">
+                <legend class="h6">AI 使用情况</legend>
+                <div class="mb-3">
+                  <p class="form-label mb-1">比赛或备赛中，你把 AI 用在了哪些环节（可多选）</p>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="stage" id="st-1" value="选题">
+                    <label class="form-check-label" for="st-1">选题</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="stage" id="st-2" value="数据处理">
+                    <label class="form-check-label" for="st-2">数据处理</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="stage" id="st-3" value="建模">
+                    <label class="form-check-label" for="st-3">建模</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="stage" id="st-4" value="论文写作">
+                    <label class="form-check-label" for="st-4">论文写作</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="stage" id="st-5" value="其他">
+                    <label class="form-check-label" for="st-5">其他</label>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="s-ai">常用 AI</label>
+                    <select class="form-select" id="s-ai" name="ai">
+                      <option value="">请选择</option>
+                      <option value="ChatGPT">ChatGPT</option>
+                      <option value="Kimi">Kimi</option>
+                      <option value="DeepSeek">DeepSeek</option>
+                      <option value="其他">其他</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <p class="form-label mb-1">主要用免费还是付费的</p>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="payment" id="pay-free" value="免费" checked>
+                      <label class="form-check-label" for="pay-free">免费</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="payment" id="pay-paid" value="付费">
+                      <label class="form-check-label" for="pay-paid">付费</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="payment" id="pay-both" value="两者都用">
+                      <label class="form-check-label" for="pay-both">两者都用</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <label class="form-label" for="s-advice">对「比赛中用 AI」有什么想说的</label>
+                  <textarea class="form-control" id="s-advice" name="advice" rows="3" maxlength="200" placeholder="比如：用在了哪里、踩过什么坑、有什么建议（选填）"></textarea>
+                </div>
+              </fieldset>
+
+              <button type="submit" class="btn btn-accent">提交问卷</button>
+              <p class="text-muted small mb-0 mt-3" id="survey-count"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h2 class="h6">关于这份问卷</h2>
+            <p class="card-text small text-muted mb-0">
+              备赛和比赛的时候，我一直好奇别的队伍是怎么用 AI 的——是全程都开着，还是只用来查资料？
+              所以做了这份小问卷，想收集一些真实情况，也给自己下次备赛攒点参考。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h6 mb-0">已填写的记录</h2>
+              <button type="button" class="btn btn-sm btn-outline-danger" id="records-clear">清空全部</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm record-table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">称呼</th>
+                    <th scope="col">年级</th>
+                    <th scope="col">常用 AI</th>
+                    <th scope="col">使用环节</th>
+                    <th scope="col">提交时间</th>
+                    <th scope="col">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="records-body"></tbody>
+              </table>
+            </div>
+            <p class="text-muted small mb-0 mt-3">记录保存在这台电脑的浏览器里（localStorage），点「删除」可以删掉单条，也可以一次清空。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer py-4">
+    <div class="container">数模备赛小站 · 课程实践作品 · 用本地服务器打开（页面要读取 data/ 下的 JSON）</div>
+  </footer>
+</body>
+</html>

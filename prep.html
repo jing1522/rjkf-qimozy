@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的准备 · 数模备赛小站</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="libs/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="libs/jquery-3.7.1.min.js" defer></script>
+  <script src="libs/bootstrap.bundle.min.js" defer></script>
+  <script src="libs/echarts.min.js" defer></script>
+  <script src="libs/chart.umd.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-mm sticky-top" data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">数模备赛小站</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="展开导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="prep.html">我的准备</a></li>
+          <li class="nav-item"><a class="nav-link" href="notes.html">我的心得</a></li>
+          <li class="nav-item"><a class="nav-link" href="sandbox.html">三维沙盘</a></li>
+          <li class="nav-item"><a class="nav-link" href="survey.html">问卷</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-head">
+    <div class="container py-4">
+      <h1 class="h4 mb-2">我的准备</h1>
+      <p class="page-head-text mb-0">备赛期间我把每周投入的时间都记了下来，下面是实际投入和当初计划的对比，可以按方向、周区间筛选，也可以在明细里搜关键词。</p>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <section>
+      <p class="text-muted small mb-3" id="prep-sub"></p>
+      <div class="alert alert-warning" id="prep-status" style="display: none;"></div>
+
+      <div class="btn-group btn-group-sm mb-3" role="group" id="source-switch" aria-label="数据来源切换">
+        <button type="button" class="btn btn-accent" data-source="actual">实际备赛</button>
+        <button type="button" class="btn btn-outline-secondary" data-source="plan">计划备赛</button>
+      </div>
+
+      <div class="card filter-card mb-4">
+        <div class="card-body">
+          <h2 class="h6 mb-3">筛选与查询</h2>
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label" for="filter-category">方向</label>
+              <select id="filter-category" class="form-select"></select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label" for="filter-from">起始周</label>
+              <select id="filter-from" class="form-select"></select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label" for="filter-to">结束周</label>
+              <select id="filter-to" class="form-select"></select>
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end">
+              <button type="button" class="btn btn-outline-secondary w-100" id="filter-reset">重置</button>
+            </div>
+            <div class="col-12 col-md-8">
+              <label class="form-label" for="filter-keyword">关键词（只在下面的明细里过滤）</label>
+              <input type="text" class="form-control" id="filter-keyword" placeholder="例如：8月，或 算法">
+            </div>
+          </div>
+          <p class="text-muted small mb-0 mt-3" id="filter-hint"></p>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4" id="cards"></div>
+
+      <div class="row g-3">
+        <div class="col-12 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h3 class="h6 mb-3">每周投入时长（柱状图）</h3>
+              <div id="bar-chart" class="chart-box"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h3 class="h6 mb-3">投入变化趋势（折线图）</h3>
+              <div class="chart-box"><canvas id="line-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h3 class="h6 mb-3">各方向占比（饼图）</h3>
+              <div id="pie-chart" class="chart-box"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-muted small mt-3 mb-4" id="focus-hint">提示：点柱状图里的柱子，折线图会只显示那一类（再点一次恢复）。</p>
+
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">备赛明细</h2>
+          <div class="table-responsive">
+            <table class="table table-sm record-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">周次</th>
+                  <th scope="col">方向</th>
+                  <th scope="col">时长</th>
+                </tr>
+              </thead>
+              <tbody id="detail-body"></tbody>
+            </table>
+          </div>
+          <p class="text-muted small mb-0 mt-3">筛选规则：方向和周区间会同时影响上面的图表和这张明细；关键词只在明细里过滤。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer py-4">
+    <div class="container">数模备赛小站 · 课程实践作品 · 用本地服务器打开（页面要读取 data/ 下的 JSON）</div>
+  </footer>
+</body>
+</html>

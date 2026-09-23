@@ -5,9 +5,11 @@
 
   const state = {
     actual: null,
+    actualRaw: null,
     plan: null,
     source: 'actual',
     focus: null,
+    editing: null,
     filter: { category: '', from: 0, to: 0, keyword: '' }
   };
 
@@ -15,8 +17,34 @@
   let lineChart = null;
   let pieChart = null;
 
+  const STORAGE_KEY = 'prep_records';
+
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+
+  const readSaved = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw === null ? null : JSON.parse(raw);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const writeSaved = (data) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const setStatus = (text, type) => {
     $('#prep-status').removeClass('alert-warning alert-success alert-danger').addClass(type).text(text).show();
+  };
+
+  const setManageStatus = (text, type) => {
+    $('#manage-status').removeClass('alert-warning alert-success alert-danger').addClass(type).text(text).show();
   };
 
   const loadJson = async (url) => {
@@ -28,6 +56,8 @@
   };
 
   const currentData = () => (state.source === 'plan' ? state.plan : state.actual);
+
+  const findSeries = (data, category) => data.series.filter(s => s.category === category)[0] || null;
 
   const inRange = (index) => index >= state.filter.from && index <= state.filter.to;
 
@@ -204,6 +234,63 @@
     renderTable();
   };
 
+  const applyRecord = (weekIndex, category, hours) => {
+    const series = findSeries(state.actual, category);
+    const oldValue = series.counts[weekIndex];
+    series.counts[weekIndex] = hours;
+    if (writeSaved(state.actual)) {
+      return true;
+    }
+    series.counts[weekIndex] = oldValue;
+    return false;
+  };
+
+  const resetRecordForm = () => {
+    state.editing = null;
+    $('#record-category').val('');
+    $('#record-week').val('');
+    $('#record-hours').val('');
+    $('#record-submit').text('保存记录');
+    $('#record-cancel').hide();
+  };
+
+  const renderManage = () => {
+    const data = state.actual;
+    if (data === null) {
+      return;
+    }
+    const rows = [];
+    data.weeks.forEach((week, i) => {
+      data.series.forEach(s => {
+        if (s.counts[i] > 0) {
+          rows.push({ week: week, weekIndex: i, category: s.category, count: s.counts[i] });
+        }
+      });
+    });
+
+    $('#manage-body').empty();
+    if (rows.length === 0) {
+      $('#manage-body').append('<tr><td colspan="4" class="text-muted">现在一条记录都没有，在上面填一条试试。</td></tr>');
+    } else {
+      rows.forEach(r => {
+        $('#manage-body').append(
+          '<tr>' +
+          '<td>' + r.week + '</td>' +
+          '<td>' + r.category + '</td>' +
+          '<td>' + r.count + ' ' + data.unit + '</td>' +
+          '<td>' +
+          '<button type="button" class="btn btn-sm btn-outline-secondary edit-record" data-week="' + r.weekIndex + '" data-category="' + r.category + '">修改</button> ' +
+          '<button type="button" class="btn btn-sm btn-outline-danger del-record-row" data-week="' + r.weekIndex + '" data-category="' + r.category + '">删除</button>' +
+          '</td>' +
+          '</tr>'
+        );
+      });
+    }
+
+    const total = rows.reduce((sum, r) => sum + r.count, 0);
+    $('#manage-hint').text('当前共 ' + rows.length + ' 条记录，合计 ' + total + ' ' + data.unit + '；删掉一条等于把那一格清零，明细表里会显示 0。');
+  };
+
   const fillFilterOptions = (data) => {
     $('#filter-category').empty().append('<option value="">全部方向</option>');
     $('#filter-from').empty();
@@ -214,6 +301,14 @@
     data.weeks.forEach((week, i) => {
       $('#filter-from').append('<option value="' + i + '">' + week + '</option>');
       $('#filter-to').append('<option value="' + i + '">' + week + '</option>');
+    });
+    $('#record-category').empty().append('<option value="">选择方向</option>');
+    data.series.forEach(s => {
+      $('#record-category').append('<option value="' + s.category + '">' + s.category + '</option>');
+    });
+    $('#record-week').empty().append('<option value="">选择周次</option>');
+    data.weeks.forEach((week, i) => {
+      $('#record-week').append('<option value="' + i + '">' + week + '</option>');
     });
     state.filter.category = '';
     state.filter.keyword = '';
@@ -235,12 +330,20 @@
         setStatus('暂无数据：data/prep.json 里还没有记录。', 'alert-warning');
         return;
       }
-      state.actual = actual;
+      state.actualRaw = clone(actual);
+      const saved = readSaved();
+      state.actual = (saved !== null && saved.series && saved.series.length === actual.series.length) ? saved : clone(actual);
       state.plan = plan;
       state.source = 'actual';
-      fillFilterOptions(actual);
+      fillFilterOptions(state.actual);
       renderAll();
-      setStatus('数据加载完成：两份 JSON 并行加载用时 ' + ms.toFixed(0) + ' ms', 'alert-success');
+      renderManage();
+      setStatus(
+        saved === null
+          ? '数据加载完成：两份 JSON 并行加载用时 ' + ms.toFixed(0) + ' ms'
+          : '数据加载完成：两份 JSON 并行加载用时 ' + ms.toFixed(0) + ' ms（读到本机保存的修改，点「恢复初始数据」可回到原样）',
+        'alert-success'
+      );
     } catch (error) {
       setStatus('加载失败：' + error.message + '（检查 data/prep.json 与 data/plan.json 是否存在，以及本地服务器有没有开着）', 'alert-danger');
     }
@@ -251,6 +354,7 @@
     $('#source-switch button').removeClass('btn-accent').addClass('btn-outline-secondary');
     $(this).removeClass('btn-outline-secondary').addClass('btn-accent');
     renderAll();
+    $('#manage-card').toggle(state.source === 'actual');
   });
 
   $('#filter-category').on('change', function () {
@@ -294,6 +398,118 @@
     $('#filter-from').val(state.filter.from);
     $('#filter-to').val(state.filter.to);
     renderAll();
+  });
+
+  $('#record-form').on('submit', function (event) {
+    event.preventDefault();
+    if (state.actual === null) {
+      setManageStatus('数据还没加载完，等一下再试。', 'alert-danger');
+      return;
+    }
+
+    const category = $('#record-category').val();
+    const weekValue = $('#record-week').val();
+    const hoursText = $('#record-hours').val().trim();
+
+    if (category === '') {
+      setManageStatus('先选一个方向。', 'alert-danger');
+      return;
+    }
+    if (weekValue === '') {
+      setManageStatus('先选一个周次。', 'alert-danger');
+      return;
+    }
+    if (hoursText === '') {
+      setManageStatus('时长还没填，写一个大于 0、不超过 24 的数字。', 'alert-danger');
+      return;
+    }
+    const hours = Number(hoursText);
+    if (!isFinite(hours) || hours <= 0 || hours > 24) {
+      setManageStatus('时长要填大于 0、不超过 24 的数字，最多一位小数，不要带单位。', 'alert-danger');
+      return;
+    }
+
+    const weekIndex = Number(weekValue);
+    const weekLabel = state.actual.weeks[weekIndex];
+    const series = findSeries(state.actual, category);
+    const oldValue = series.counts[weekIndex];
+    const isEditing = state.editing !== null && state.editing.weekIndex === weekIndex && state.editing.category === category;
+
+    if (!isEditing && oldValue > 0) {
+      setManageStatus('「' + category + '」在「' + weekLabel + '」已经有 ' + oldValue + ' ' + state.actual.unit + '了，点那一行的「修改」来改它。', 'alert-danger');
+      return;
+    }
+
+    const value = Math.round(hours * 10) / 10;
+    if (!applyRecord(weekIndex, category, value)) {
+      setManageStatus('保存失败：本地存储不可用，可以清一点空间再试。', 'alert-danger');
+      return;
+    }
+
+    resetRecordForm();
+    renderAll();
+    renderManage();
+    setManageStatus(
+      isEditing
+        ? '已经改好：「' + category + '」' + weekLabel + ' 现在是 ' + value + ' ' + state.actual.unit + '。'
+        : '已经加了一条：「' + category + '」' + weekLabel + '，' + value + ' ' + state.actual.unit + '。',
+      'alert-success'
+    );
+  });
+
+  $('#manage-body').on('click', '.edit-record', function () {
+    const weekIndex = Number($(this).attr('data-week'));
+    const category = $(this).attr('data-category');
+    const series = findSeries(state.actual, category);
+    state.editing = { weekIndex: weekIndex, category: category };
+    $('#record-category').val(category);
+    $('#record-week').val(weekIndex);
+    $('#record-hours').val(series.counts[weekIndex]);
+    $('#record-submit').text('保存修改');
+    $('#record-cancel').show();
+    setManageStatus('正在修改：「' + category + '」' + state.actual.weeks[weekIndex] + '。改完点「保存修改」。', 'alert-warning');
+  });
+
+  $('#manage-body').on('click', '.del-record-row', function () {
+    const weekIndex = Number($(this).attr('data-week'));
+    const category = $(this).attr('data-category');
+    const removed = findSeries(state.actual, category).counts[weekIndex];
+    if (!applyRecord(weekIndex, category, 0)) {
+      setManageStatus('删除失败：本地存储不可用，可以清一点空间再试。', 'alert-danger');
+      return;
+    }
+    if (state.editing !== null && state.editing.weekIndex === weekIndex && state.editing.category === category) {
+      resetRecordForm();
+    }
+    renderAll();
+    renderManage();
+    setManageStatus('已删除：「' + category + '」' + state.actual.weeks[weekIndex] + ' 原来记的 ' + removed + ' ' + state.actual.unit + '，那一格清零、明细表里显示 0。', 'alert-success');
+  });
+
+  $('#record-cancel').on('click', function () {
+    resetRecordForm();
+    setManageStatus('取消修改，表单已经清空。', 'alert-warning');
+  });
+
+  $('#record-reset').on('click', function () {
+    if (state.actualRaw === null) {
+      return;
+    }
+    if (!window.confirm('确定丢弃本机保存的修改，恢复成 data/prep.json 的原样吗？')) {
+      return;
+    }
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      setManageStatus('恢复失败：本地存储不可用。', 'alert-danger');
+      return;
+    }
+    state.actual = clone(state.actualRaw);
+    resetRecordForm();
+    fillFilterOptions(state.actual);
+    renderAll();
+    renderManage();
+    setManageStatus('已恢复成 data/prep.json 里的原始数据。', 'alert-success');
   });
 
   window.addEventListener('resize', () => {

@@ -127,6 +127,47 @@
           <p class="text-muted small mb-0 mt-3">筛选规则：方向和周区间会同时影响上面的图表和这张明细；关键词只在明细里过滤。</p>
         </div>
       </div>
+
+      <div class="card mt-4" id="manage-card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">管理备赛记录</h2>
+          <p class="text-muted small mb-3">这里改的是「实际备赛」那一份：可以新增、修改、删除每周的记录，改完上面的卡片、三张图和明细表会一起变（首页的概览也会跟着变）。改动存在这台电脑的浏览器里，刷新不会丢；点「恢复初始数据」就能回到 data/prep.json 的原样。现在 3 个方向 × 8 周都记满了，换数字直接点那一行的「修改」；想腾出一格再填新的，就点「删除」。切到「计划备赛」时这个区块会收起来，因为计划是当初定的目标，不在这里改。</p>
+          <div class="alert alert-warning" id="manage-status" style="display: none;"></div>
+          <form id="record-form" class="row g-3 align-items-end">
+            <div class="col-12 col-md-3">
+              <label class="form-label" for="record-category">方向</label>
+              <select id="record-category" class="form-select"></select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label" for="record-week">周次</label>
+              <select id="record-week" class="form-select"></select>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label" for="record-hours">时长（小时）</label>
+              <input type="text" class="form-control" id="record-hours" placeholder="例如 3">
+            </div>
+            <div class="col-12 col-md-4">
+              <button type="submit" class="btn btn-accent" id="record-submit">保存记录</button>
+              <button type="button" class="btn btn-outline-secondary" id="record-cancel" style="display: none;">取消修改</button>
+              <button type="button" class="btn btn-outline-secondary" id="record-reset">恢复初始数据</button>
+            </div>
+          </form>
+          <div class="table-responsive mt-3">
+            <table class="table table-sm record-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">周次</th>
+                  <th scope="col">方向</th>
+                  <th scope="col">时长</th>
+                  <th scope="col">操作</th>
+                </tr>
+              </thead>
+              <tbody id="manage-body"></tbody>
+            </table>
+          </div>
+          <p class="text-muted small mb-0 mt-3" id="manage-hint"></p>
+        </div>
+      </div>
     </section>
   </main>
 

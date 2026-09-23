@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="libs/jquery-3.7.1.min.js" defer></script>
   <script src="libs/bootstrap.bundle.min.js" defer></script>
+  <script src="js/home.js" defer></script>
 </head>
 <body>
   <nav class="navbar navbar-expand-md navbar-mm sticky-top" data-bs-theme="dark">
@@ -46,6 +47,19 @@
   </header>
 
   <main class="container py-5">
+    <section class="mb-5" id="overview">
+      <h2 class="h4 mb-3">备赛概览</h2>
+      <div class="alert alert-warning" id="home-status" style="display: none;"></div>
+      <div class="row g-3 mb-4" id="home-stats"></div>
+      <div class="card">
+        <div class="card-body">
+          <h3 class="h6 mb-3">8 周投入时间线（每周合计）</h3>
+          <div class="timeline" id="home-timeline"></div>
+          <p class="text-muted small mb-0 mt-3" id="home-source"></p>
+        </div>
+      </div>
+    </section>
+
     <section>
       <h2 class="h4 mb-3">站点里有什么</h2>
       <div class="row g-3 mb-4">
